@@ -146,7 +146,7 @@ class PerceptronClassifier(SentimentClassifier):
                         self.weights[index] += self.learning_rate * update * value
 
 class LogisticRegressionClassifier(SentimentClassifier):
-    def __init__(self, feature_extractor, vocab_size, epochs=20, learning_rate=0.1):
+    def __init__(self, feature_extractor, vocab_size, epochs=20, learning_rate=0.2):
         self.feature_extractor = feature_extractor
         self.learning_rate = learning_rate
         self.weights = np.zeros(vocab_size)
