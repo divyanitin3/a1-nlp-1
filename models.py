@@ -57,9 +57,10 @@ class BigramFeatureExtractor(FeatureExtractor):
     def extract_features(self, sentence):
         feature_vector = Counter()
         
-        # we remove the stop words from the sentence
+        # we filter out and remove spot words
         filtered_sentence = [word for word in sentence if word not in self.stop_words]
         
+        # Extract bigrams 
         for i in range(len(filtered_sentence) - 1):
             bigram = f"{filtered_sentence[i]}_{filtered_sentence[i+1]}"
             bigram_index = self.indexer.get_index(f"Bigram={bigram}")
@@ -85,7 +86,6 @@ class BetterFeatureExtractor(FeatureExtractor):
         :return: A dictionary where keys are indices of features and values are counts.
         """
         feature_vector = Counter()
-         # we remove the stop words from the sentence
         filtered_sentence = [word for word in sentence if word not in self.stop_words]
 
         for word in filtered_sentence:
@@ -113,7 +113,7 @@ class TrivialSentimentClassifier(SentimentClassifier):
 class PerceptronClassifier(SentimentClassifier):
     def __init__(self, feature_extractor: FeatureExtractor, vocab_size, epochs=18, learning_rate=0.2):
         self.feature_extractor = feature_extractor
-        self.weights = np.zeros(vocab_size) 
+        self.weights = np.zeros(vocab_size)
         self.bias = 0.0
         self.epochs = epochs
         self.learning_rate = learning_rate
@@ -171,7 +171,6 @@ class LogisticRegressionClassifier(SentimentClassifier):
         error = label - probability
         for feature, value in features.items():
             if feature < len(self.weights):
-                #regularize
                 self.weights[feature] += learning_rate * (error * value - self.reg_strength * self.weights[feature])
 
     def compute_loss_and_gradients(self, example):
@@ -224,13 +223,10 @@ def train_logistic_regression(train_examples: List[SentimentExample], feature_ex
         feature_extractor.extract_features(eg.words)
 
     vocab_size = feature_extractor.get_vocab_size()
-
-    # Initialize the classifier
     classifier = LogisticRegressionClassifier(feature_extractor, vocab_size)
     classifier.train(train_examples)
 
     return classifier
-
 
 def train_model(args, train_exs: List[SentimentExample], dev_exs: List[SentimentExample]) -> SentimentClassifier:
     """
